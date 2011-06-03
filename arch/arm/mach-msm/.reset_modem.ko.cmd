@@ -1,1 +1,0 @@
-cmd_arch/arm/mach-msm/reset_modem.ko := /home/mur4ik/android/cm/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-ld -EL -r  -T /home/mur4ik/android/kernel/scripts/module-common.lds --build-id -o arch/arm/mach-msm/reset_modem.ko arch/arm/mach-msm/reset_modem.o arch/arm/mach-msm/reset_modem.mod.o

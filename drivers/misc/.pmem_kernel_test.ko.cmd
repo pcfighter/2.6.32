@@ -1,1 +1,0 @@
-cmd_drivers/misc/pmem_kernel_test.ko := /home/mur4ik/android/cm/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-ld -EL -r  -T /home/mur4ik/android/kernel/scripts/module-common.lds --build-id -o drivers/misc/pmem_kernel_test.ko drivers/misc/pmem_kernel_test.o drivers/misc/pmem_kernel_test.mod.o

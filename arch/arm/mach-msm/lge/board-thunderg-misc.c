@@ -188,12 +188,12 @@ static struct platform_device msm_device_pmic_leds = {
 int thunderg_vibrator_power_set(int enable)
 {
 	static int is_enabled = 0;
-	struct device *dev = thunderg_backlight_dev();
+	//struct device *dev = thunderg_backlight_dev();
 
-	if (dev==NULL) {
+	/*if (dev==NULL) {
 		printk(KERN_ERR "%s: backlight devive get failed\n", __FUNCTION__);
 		return -1;
-	}
+	}*/
 
 	if (enable) {
 		if (is_enabled) {
@@ -202,7 +202,7 @@ int thunderg_vibrator_power_set(int enable)
 		}
 		
 		/* 3300 mV for Motor IC */				
-		if (aat28xx_ldo_set_level(dev, 1, VIBE_IC_VOLTAGE) < 0) {
+		/*if (aat28xx_ldo_set_level(dev, 1, VIBE_IC_VOLTAGE) < 0) {
 			printk(KERN_ERR "%s: vibrator LDO set failed\n", __FUNCTION__);
 			return -EIO;
 		}
@@ -210,7 +210,7 @@ int thunderg_vibrator_power_set(int enable)
 		if (aat28xx_ldo_enable(dev, 1, 1) < 0) {
 			printk(KERN_ERR "%s: vibrator LDO enable failed\n", __FUNCTION__);
 			return -EIO;
-		}
+		}*/
 		is_enabled = 1;
 	} else {
 		if (!is_enabled) {
@@ -218,7 +218,7 @@ int thunderg_vibrator_power_set(int enable)
 			return 0;
 		}
 		
-		if (aat28xx_ldo_set_level(dev, 1, 0) < 0) {		
+		/*if (aat28xx_ldo_set_level(dev, 1, 0) < 0) {		
 			printk(KERN_ERR "%s: vibrator LDO set failed\n", __FUNCTION__);
 			return -EIO;
 		}
@@ -226,7 +226,7 @@ int thunderg_vibrator_power_set(int enable)
 		if (aat28xx_ldo_enable(dev, 1, 0) < 0) {
 			printk(KERN_ERR "%s: vibrator LDO disable failed\n", __FUNCTION__);
 			return -EIO;
-		}
+		}*/
 		is_enabled = 0;
 	}
 	return 0;

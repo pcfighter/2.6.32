@@ -2211,6 +2211,10 @@ config FB_MSM_DTV
 	bool
 	default n
 
+config FB_MSM_MDDI_2
+	bool "MDDI TYPE 2 support"
+	default n
+
 config FB_MSM_EXTMDDI
 	bool
 	default n
@@ -2284,6 +2288,11 @@ config FB_MSM_LCDC_SHARP_WVGA_PT
 config FB_MSM_LCDC_WXGA
 	bool
 	select FB_MSM_LCDC_PANEL
+	default n
+
+config FB_MSM_MDDI_SWIFT_SS
+	bool
+	select FB_MSM_MDDI
 	default n
 
 choice
@@ -2395,6 +2404,20 @@ config FB_MSM_MDDI_NOVATEK_HVGA
 	select FB_MSM_MDDI
 	---help---
 	  Support for MDDI NOVATEK HVGA(320x480) Panel.
+
+config FB_MSM_MDDI_SWIFT_PANEL
+	bool "MDDI Swift SS DirverIC panel"
+	select FB_MSM_MDDI_SWIFT_SS
+	---help---
+	  Support for MDDI Swift HVGA(SS driverIC) panel
+	  320x480, innotek and sharp...
+
+config FB_MSM_MDDI_SWIFT_REF
+	bool "Test MDDI Swift SS DirverIC panel"
+	select FB_MSM_MDDI_SWIFT_SS
+	---help---
+	  Support for MDDI Swift HVGA(SS driverIC) panel
+	  320x480, innotek and sharp...
 
 config FB_MSM_PANEL_NONE
 	bool "NONE"

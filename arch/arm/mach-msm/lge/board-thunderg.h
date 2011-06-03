@@ -45,16 +45,6 @@
 #define GPIO_SD_CLK         56
 #endif
 
-/* touch-screen macros */
-#define TS_X_MIN			0
-#define TS_X_MAX			320
-#define TS_Y_MIN			0
-#define TS_Y_MAX			480
-#define TS_GPIO_I2C_SDA		91
-#define TS_GPIO_I2C_SCL		90
-#define TS_GPIO_IRQ			92
-#define TS_I2C_SLAVE_ADDR	0x20
-
 /* camera */
 #define CAM_I2C_SLAVE_ADDR			0x1a
 #define GPIO_CAM_RESET		 		0		/* GPIO_0 */
@@ -69,13 +59,6 @@
 #define LDO_CAM_AVDD_NO		2	/* 2.7V */
 #define LDO_CAM_DVDD_NO		3	/* 1.2V */
 #define LDO_CAM_IOVDD_NO	4	/* 2.6V */
-
-/* proximity sensor */
-#define PROXI_GPIO_I2C_SCL	107
-#define PROXI_GPIO_I2C_SDA 	108
-#define PROXI_GPIO_DOUT		109
-#define PROXI_I2C_ADDRESS	0x44 /*slave address 7bit*/
-#define PROXI_LDO_NO_VCC	1
 
 /* accelerometer */
 #define ACCEL_GPIO_INT	 	33 //39
@@ -137,5 +120,5 @@ void camera_power_mutex_lock(void);
 void camera_power_mutex_unlock(void);
 void thunderg_pwrsink_resume(void);
 
-struct device* thunderg_backlight_dev(void);
+//struct device* thunderg_backlight_dev(void);
 #endif

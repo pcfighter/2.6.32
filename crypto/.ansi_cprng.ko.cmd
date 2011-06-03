@@ -1,1 +1,0 @@
-cmd_crypto/ansi_cprng.ko := /home/mur4ik/android/cm/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-ld -EL -r  -T /home/mur4ik/android/kernel/scripts/module-common.lds --build-id -o crypto/ansi_cprng.ko crypto/ansi_cprng.o crypto/ansi_cprng.mod.o
