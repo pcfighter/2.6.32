@@ -18,22 +18,26 @@ obj-$(CONFIG_LGE_MTD_DIRECT_ACCESS) += lge_mtd_direct_access.o
 #obj-$(CONFIG_LGE_DIAGTEST) += lg_fw_diag_mtc.o
 #obj-$(CONFIG_LGE_DIAGTEST) += lg_diag_wifi.o
 
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-thunderg.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-thunderg-mmc.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-thunderg-snd.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-thunderg-panel.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-thunderg-bt.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-thunderg-camera.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-thunderg-input.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-thunderg-misc.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-thunderg-pm.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-ec-ak8973.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-msensor-bma150.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-sensors.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-mmc.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-snd.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-panel.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-bt.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-camera.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-input.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-misc.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-pm.o
 obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-bl-rt9393_mc.o
+obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-vibrator.o
 obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-leds.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-ss-driveric-panel.o
-obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += mddi_ss_driveric_innotek.o
+#obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-ss-driveric-panel.o
+#obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += mddi_ss_driveric_innotek.o
 obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += board-swift-msm-touch.o
-
 obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += lge_errorhandler.o #LGE_CHANGE [blue.park@lge.com] 2009-04-04 <For Error Handler>
+
 obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += lge_temp.o # LGE_CHANGE neo.kang@lge.com just for Line PV. It will be removed
 obj-$(CONFIG_MACH_MSM7X27_THUNDERG) += lge_mtd_direct_access.o # LGE_CHANGE neo.kang@lge.com just for Line PV. It will be removed.
 
@@ -50,3 +54,15 @@ obj-$(CONFIG_LGE_DIAG_WMC) += lg_diag_wmc.o
 obj-$(CONFIG_LGE_SUPPORT_AT_CMD) += lge_ats_flex.o # LGE_CHANGE [irene.park@lge.com] 2010-06-04 - to get flex value from ARM9 
 obj-$(CONFIG_LGE_PWRSINK) += lge_pwrsink.o
 
+#
+# Makefile for the swift specific files
+#
+
+#obj-y += board-swift.o
+#obj-y += board-swift-keypad.o
+#obj-y += board-swift-gpio-i2c.o
+#obj-y += board-swift-msensor-bma150.o
+#obj-y += board-swift-ec-ak8973.o
+#obj-y += board-swift-headset.o
+#obj-y+= board-swift-bt.o
+#obj-y += cal_algorithm.o

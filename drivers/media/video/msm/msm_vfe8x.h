@@ -827,7 +827,6 @@ enum VFE_MESSAGE_ID {
 	VFE_MSG_ID_VIOLATION,
 	VFE_MSG_ID_CAMIF_ERROR,
 	VFE_MSG_ID_BUS_OVERFLOW,
-	VFE_MSG_ID_SOF_ACK,
 };
 
 struct vfe_msg_stats_autofocus {

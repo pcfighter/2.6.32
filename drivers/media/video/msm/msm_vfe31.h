@@ -1,29 +1,28 @@
-/* Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2009, Code Aurora Forum. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
+ * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *     * Neither the name of Code Aurora Forum, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Code Aurora nor
+ *       the names of its contributors may be used to endorse or promote
+ *       products derived from this software without specific prior written
+ *       permission.
  *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
- * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NON-INFRINGEMENT ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -165,11 +164,15 @@ enum VFE31_DMI_RAM_SEL {
 	 RGBLUT_RAM_CH1_BANK1     = 0x5,
 	 RGBLUT_RAM_CH2_BANK0     = 0x6,
 	 RGBLUT_RAM_CH2_BANK1     = 0x7,
-	 STATS_HIST_RAM           = 0x8,
-	 RGBLUT_CHX_BANK0         = 0x9,
-	 RGBLUT_CHX_BANK1         = 0xa,
-	 LUMA_ADAPT_LUT_RAM_BANK0 = 0xb,
-	 LUMA_ADAPT_LUT_RAM_BANK1 = 0xc
+	 STATS_HIST_CB_EVEN_RAM   = 0x8,
+	 STATS_HIST_CB_ODD_RAM    = 0x9,
+	 STATS_HIST_CR_EVEN_RAM   = 0xa,
+	 STATS_HIST_CR_ODD_RAM    = 0xb,
+	 RGBLUT_CHX_BANK0         = 0xc,
+	 RGBLUT_CHX_BANK1         = 0xd,
+	 LUMA_ADAPT_LUT_RAM_BANK0 = 0xe,
+	 LUMA_ADAPT_LUT_RAM_BANK1 = 0xf
+
 };
 
 enum  VFE_STATE {
@@ -601,8 +604,7 @@ struct vfe_cmd_color_correction_config {
 	int16_t  K2;
 };
 
-#define VFE_LA_TABLE_LENGTH 64
-
+#define VFE_LA_TABLE_LENGTH 256
 struct vfe_cmd_la_config {
 	uint8_t enable;
 	int16_t table[VFE_LA_TABLE_LENGTH];
@@ -745,7 +747,7 @@ enum VFE_AXI_RD_UNPACK_HBI_SEL {
 };
 
 enum VFE31_MESSAGE_ID {
-	MSG_ID_RESET_ACK, /* 0 */
+	MSG_ID_RESET_ACK,
 	MSG_ID_START_ACK,
 	MSG_ID_STOP_ACK,
 	MSG_ID_UPDATE_ACK,
@@ -755,8 +757,8 @@ enum VFE31_MESSAGE_ID {
 	MSG_ID_OUTPUT_V,
 	MSG_ID_SNAPSHOT_DONE,
 	MSG_ID_STATS_AEC,
-	MSG_ID_STATS_AF, /* 10 */
-	MSG_ID_STATS_AWB,
+	MSG_ID_STATS_AF,
+	MSG_ID_STATS_AWB, /* 8 */
 	MSG_ID_STATS_RS,
 	MSG_ID_STATS_CS,
 	MSG_ID_STATS_IHIST,
@@ -765,7 +767,7 @@ enum VFE31_MESSAGE_ID {
 	MSG_ID_EPOCH2,
 	MSG_ID_SYNC_TIMER0_DONE,
 	MSG_ID_SYNC_TIMER1_DONE,
-	MSG_ID_SYNC_TIMER2_DONE, /* 20 */
+	MSG_ID_SYNC_TIMER2_DONE,
 	MSG_ID_ASYNC_TIMER0_DONE,
 	MSG_ID_ASYNC_TIMER1_DONE,
 	MSG_ID_ASYNC_TIMER2_DONE,
@@ -775,14 +777,13 @@ enum VFE31_MESSAGE_ID {
 	MSG_ID_AWB_OVERFLOW,
 	MSG_ID_RS_OVERFLOW,
 	MSG_ID_CS_OVERFLOW,
-	MSG_ID_IHIST_OVERFLOW, /* 30 */
+	MSG_ID_IHIST_OVERFLOW,
 	MSG_ID_SKIN_OVERFLOW,
 	MSG_ID_AXI_ERROR,
 	MSG_ID_CAMIF_OVERFLOW,
 	MSG_ID_VIOLATION,
 	MSG_ID_CAMIF_ERROR,
 	MSG_ID_BUS_OVERFLOW,
-	MSG_ID_SOF_ACK,
 };
 
 struct vfe_msg_stats{
@@ -873,29 +874,7 @@ struct vfe31_output_ch {
 #define VFE31_IMASK_ERROR_ONLY_0  0x0
 /* when normal case, don't want to block error status. */
 /* bit 0-21 are error irq bits */
-#define VFE31_IMASK_ERROR_ONLY_1               0x003FFFFF
-#define VFE31_IMASK_CAMIF_ERROR               (0x00000001<<0)
-#define VFE31_IMASK_STATS_CS_OVWR             (0x00000001<<1)
-#define VFE31_IMASK_STATS_IHIST_OVWR          (0x00000001<<2)
-#define VFE31_IMASK_REALIGN_BUF_Y_OVFL        (0x00000001<<3)
-#define VFE31_IMASK_REALIGN_BUF_CB_OVFL       (0x00000001<<4)
-#define VFE31_IMASK_REALIGN_BUF_CR_OVFL       (0x00000001<<5)
-#define VFE31_IMASK_VIOLATION                 (0x00000001<<6)
-#define VFE31_IMASK_IMG_MAST_0_BUS_OVFL       (0x00000001<<7)
-#define VFE31_IMASK_IMG_MAST_1_BUS_OVFL       (0x00000001<<8)
-#define VFE31_IMASK_IMG_MAST_2_BUS_OVFL       (0x00000001<<9)
-#define VFE31_IMASK_IMG_MAST_3_BUS_OVFL       (0x00000001<<10)
-#define VFE31_IMASK_IMG_MAST_4_BUS_OVFL       (0x00000001<<11)
-#define VFE31_IMASK_IMG_MAST_5_BUS_OVFL       (0x00000001<<12)
-#define VFE31_IMASK_IMG_MAST_6_BUS_OVFL       (0x00000001<<13)
-#define VFE31_IMASK_STATS_AE_BUS_OVFL         (0x00000001<<14)
-#define VFE31_IMASK_STATS_AF_BUS_OVFL         (0x00000001<<15)
-#define VFE31_IMASK_STATS_AWB_BUS_OVFL        (0x00000001<<16)
-#define VFE31_IMASK_STATS_RS_BUS_OVFL         (0x00000001<<17)
-#define VFE31_IMASK_STATS_CS_BUS_OVFL         (0x00000001<<18)
-#define VFE31_IMASK_STATS_IHIST_BUS_OVFL      (0x00000001<<19)
-#define VFE31_IMASK_STATS_SKIN_BUS_OVFL       (0x00000001<<20)
-#define VFE31_IMASK_AXI_ERROR                 (0x00000001<<21)
+#define VFE31_IMASK_ERROR_ONLY_1  0x003fffff
 
 struct vfe31_output_path {
 	uint16_t output_mode;     /* bitmask  */

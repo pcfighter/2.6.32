@@ -146,13 +146,7 @@ enum {
 
 	/* add OEM PROC COMM commands here */
 
-	PCOM_OEM_GET_TOUCH_CAL,
-	PCOM_OEM_SET_TOUCH_CAL,
-#if 1
-	PCOM_OEM_LAST = PCOM_OEM_SET_TOUCH_CAL,
-#else
 	PCOM_OEM_LAST = PCOM_OEM_TEST_CMD,
-#endif 
 };
 
 enum {

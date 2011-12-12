@@ -1,0 +1,17 @@
+--- drivers/cpufreq/Kconfig
++++ drivers/cpufreq/Kconfig
+@@ -204,6 +210,14 @@
+ 
+ 	  If in doubt, say N.
+ 
++config CPU_FREQ_GOV_SMARTASS2
++	tristate "'smartassV2' cpufreq governor"
++	depends on CPU_FREQ
++	help
++      'smartassV2' - a "smart" optimized governor for the click!
++
++	  If in doubt, say N.
++
+ config CPU_FREQ_MIN_TICKS
+ 	int "Ticks between governor polling interval."
+ 	default 10

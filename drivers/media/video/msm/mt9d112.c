@@ -507,14 +507,13 @@ static long mt9d112_set_sensor_mode(int mode)
 		if (rc < 0)
 			return rc;
 
-		msleep(40);/*waiting for the delay of one frame*/
 		rc =
 			mt9d112_i2c_write(mt9d112_client->addr,
 				0x3390, 0x0002, WORD_LEN);
 		if (rc < 0)
 			return rc;
 
-		msleep(80);/*waiting for the delay of two frames*/
+		msleep(40);
 
 		rc =
 			mt9d112_i2c_write(mt9d112_client->addr,
@@ -522,7 +521,6 @@ static long mt9d112_set_sensor_mode(int mode)
 		if (rc < 0)
 			return rc;
 
-		msleep(40);/*waiting for the delay of one frame*/
 		rc =
 			mt9d112_i2c_write(mt9d112_client->addr,
 				0x3390, 0x0002, WORD_LEN);

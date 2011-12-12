@@ -50,7 +50,7 @@ struct msm_ptbl_entry {
 /* increase max for fota
  * hyunhui.park@lge.com 2010-06-15
  */
-#define MSM_MAX_PARTITIONS 11
+#define MSM_MAX_PARTITIONS 16
 #else /* original */
 #define MSM_MAX_PARTITIONS 10
 #endif

@@ -374,7 +374,7 @@ static int copy_frame_buffer(struct notifier_block *this, unsigned long event,
 	int fb_size = 320 * 480 * 2;
 
 	copy_addr = lge_get_fb_copy_virt_addr();
-	fb_addr = lge_get_fb_addr();
+//	fb_addr = lge_get_fb_addr();
 	printk(KERN_INFO"%s: copy %x\n",__func__, copy_addr);
 	printk(KERN_INFO"%s: fbad %x\n",__func__, fb_addr);
 

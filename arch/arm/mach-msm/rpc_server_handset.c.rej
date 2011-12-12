@@ -1,0 +1,11 @@
+--- arch/arm/mach-msm/rpc_server_handset.c
++++ arch/arm/mach-msm/rpc_server_handset.c
+@@ -645,7 +645,7 @@
+ 		return -ENOMEM;
+ 
+ #ifndef CONFIG_LGE_HEADSET
+-	hs->sdev.name	= "msm-h2w";
++	hs->sdev.name	= "h2w";
+ 	hs->sdev.print_name = msm_headset_print_name;
+ 
+ 	rc = switch_dev_register(&hs->sdev);

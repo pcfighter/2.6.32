@@ -24,8 +24,8 @@
 #include <mach/clk.h>
 #include <linux/delay.h>
 #include <linux/wait.h>
+#include <linux/sched.h>
 #include "msm_vfe7x.h"
-#include <linux/pm_qos_params.h>
 
 #define QDSP_CMDQUEUE 25
 
@@ -45,9 +45,7 @@
 
 #define VFE_ADSP_EVENT 0xFFFF
 #define SNAPSHOT_MASK_MODE 0x00000002
-#define MSM_AXI_QOS_PREVIEW		192000
-#define MSM_AXI_QOS_SNAPSHOT	192000
-
+#define MSM_AXI_QOS_PREVIEW	192000
 
 static struct msm_adsp_module *qcam_mod;
 static struct msm_adsp_module *vfe_mod;
@@ -229,9 +227,10 @@ static int vfe_7x_stop(void)
 
 	return rc;
 }
-
-static void vfe_7x_release(struct platform_device *pdev)
+static void vfe_7x_release(struct msm_sync *sync)
+//static void vfe_7x_release(struct platform_device *pdev)
 {
+	int rc = 0;
 	mutex_lock(&vfe_lock);
 	vfe_syncdata = NULL;
 	mutex_unlock(&vfe_lock);
@@ -248,13 +247,24 @@ static void vfe_7x_release(struct platform_device *pdev)
 	msm_adsp_put(qcam_mod);
 	msm_adsp_put(vfe_mod);
 
-	msm_camio_disable(pdev);
+  rc = sync->sctrl.s_pwdn(sync->sdata,0);
+  if (rc < 0)
+    printk("%s: power down pin failed to down\n", __func__);
 
+  mdelay(5);
+
+  rc = sync->sctrl.s_reset(sync->sdata,0);
+  if (rc < 0)
+    printk("%s: reset pin failed to down\n", __func__);
+
+  mdelay(5);
+
+	msm_camio_disable(sync->pdev);
 	kfree(extdata);
 	extlen = 0;
 
-	/* set back the AXI frequency to default */
-	update_axi_qos(PM_QOS_DEFAULT_VALUE);
+	/* release AXI frequency request */
+	release_axi_qos();
 }
 
 static int vfe_7x_init(struct msm_vfe_callback *presp,
@@ -275,6 +285,12 @@ static int vfe_7x_init(struct msm_vfe_callback *presp,
 	rc = msm_camio_enable(dev);
 	if (rc < 0)
 		return rc;
+
+	/* Set required axi bus frequency */
+	rc = request_axi_qos(MSM_AXI_QOS_PREVIEW);
+	if (rc < 0)
+		return rc;
+
 	msm_camio_camif_pad_reg_reset();
 
 	extlen = sizeof(struct vfe_frame_extra);
@@ -606,14 +622,7 @@ static int vfe_7x_config(struct msm_vfe_cfg_cmd *cmd, void *data)
 				op_mode = *(++_mode);
 				if (op_mode & SNAPSHOT_MASK_MODE) {
 					/* request AXI bus for snapshot */
-					if (update_axi_qos(MSM_AXI_QOS_SNAPSHOT)
-						< 0) {
-						rc = -EFAULT;
-						goto config_failure;
-					}
-				} else {
-					/* request AXI bus for snapshot */
-					if (update_axi_qos(MSM_AXI_QOS_PREVIEW)
+					if (update_axi_qos(MSM_AXI_MAX_FREQ)
 						< 0) {
 						rc = -EFAULT;
 						goto config_failure;

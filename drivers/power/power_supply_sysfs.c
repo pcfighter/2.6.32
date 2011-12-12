@@ -264,17 +264,8 @@ static struct device_attribute power_supply_attrs[] = {
 	POWER_SUPPLY_ATTR(voltage_min),
 	POWER_SUPPLY_ATTR(voltage_max_design),
 	POWER_SUPPLY_ATTR(voltage_min_design),
-#if defined (CONFIG_MACH_MSM7X27_ALOHAV) || \
-	defined (CONFIG_MACH_MSM7X27_GISELE) || defined (CONFIG_MACH_MSM7X27_THUNDERC)
-/* LGE_CHNAGE
- * ADD THUNDERC feature to use VS740 BATT DRIVER IN THUNDERC
- * 2010-05-13, taehung.kim@lge.com
- */
-	/* LGE_CHANGES_S [woonghee@lge.com]	2009-09-25, battery charging */
 	POWER_SUPPLY_ATTR(batt_vol),
-#else	/* origin */
-	POWER_SUPPLY_ATTR(voltage_now),
-#endif	
+//	POWER_SUPPLY_ATTR(voltage_now),
 	POWER_SUPPLY_ATTR(voltage_avg),
 	POWER_SUPPLY_ATTR(current_now),
 	POWER_SUPPLY_ATTR(current_avg),

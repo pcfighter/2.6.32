@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2010, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2009, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -63,7 +63,6 @@ struct msm_vfe8x_ctrl {
 	enum VFE_START_OPERATION_MODE   vfeOperationMode;
 
 	atomic_t vfe_serv_interrupt;
-
 	uint32_t            vfeSnapShotCount;
 	uint32_t            vfeRequestedSnapShotCount;
 	boolean             vfeStatsPingPongReloadFlag;
@@ -663,8 +662,6 @@ static boolean vfe_send_camif_error_msg(struct msm_vfe_resp *rp,
 			struct vfe_message *msg, void *data);
 static boolean vfe_send_bus_overflow_msg(struct msm_vfe_resp *rp,
 			struct vfe_message *msg, void *data);
-static boolean vfe_send_sof_msg(struct msm_vfe_resp *rp,
-			struct vfe_message *msg, void *data);
 
 static boolean invalid(struct msm_vfe_resp *rp,
 		struct vfe_message *_m, void *_d)
@@ -708,8 +705,6 @@ static struct {
 	[VFE_MSG_ID_CAMIF_ERROR] = { vfe_send_camif_error_msg,
 		VFE_MSG_GENERAL },
 	[VFE_MSG_ID_BUS_OVERFLOW] = { vfe_send_bus_overflow_msg,
-		VFE_MSG_GENERAL },
-	[VFE_MSG_ID_SOF_ACK] = { vfe_send_sof_msg,
 		VFE_MSG_GENERAL },
 };
 
@@ -781,12 +776,6 @@ static boolean vfe_send_bus_overflow_msg(struct msm_vfe_resp *rp,
 	return TRUE;
 }
 
-static boolean vfe_send_sof_msg(struct msm_vfe_resp *rp,
-			struct vfe_message *msg,
-			void *data)
-{
-	return TRUE;
-}
 static boolean vfe_send_camif_error_msg(struct msm_vfe_resp *rp,
 			struct vfe_message *msg,
 			void *data)
@@ -814,10 +803,8 @@ static void vfe_process_error_irq(struct vfe_interrupt_status *irqstatus)
 	if (irqstatus->busOverflowIrq)
 		vfe_proc_ops(VFE_MSG_ID_BUS_OVERFLOW, NULL);
 
-	if (irqstatus->camifErrorIrq) {
-		CDBG("vfe_irq: camif errors\n");
+	if (irqstatus->camifErrorIrq)
 		vfe_proc_ops(VFE_MSG_ID_CAMIF_ERROR, NULL);
-	}
 
 	if (irqstatus->camifOverflowIrq)
 		vfe_proc_ops(VFE_MSG_ID_CAMIF_OVERFLOW, NULL);
@@ -855,7 +842,6 @@ static void vfe_process_camif_sof_irq(void)
 		if (ctrl->vfeFrameSkipCount == (ctrl->vfeFrameSkipPeriod + 1))
 			ctrl->vfeFrameSkipCount = 0;
 	}
-	vfe_proc_ops(VFE_MSG_ID_SOF_ACK, NULL);
 }
 
 static boolean vfe_get_af_pingpong_status(void)
@@ -2276,8 +2262,6 @@ void vfe_start(struct vfe_cmd_start *in)
 	/* save variables to local. */
 	ctrl->vfeOperationMode = in->operationMode;
 	if (ctrl->vfeOperationMode == VFE_START_OPERATION_MODE_SNAPSHOT) {
-
-		update_axi_qos(MSM_AXI_QOS_SNAPSHOT);
 		/* in snapshot mode, initialize snapshot count*/
 		ctrl->vfeSnapShotCount = in->snapshotCount;
 
@@ -2306,8 +2290,7 @@ void vfe_start(struct vfe_cmd_start *in)
 			ctrl->vfeFrameSkipPeriod =
 				ctrl->vfeFrameSkip.output2Period;
 		}
-	} else
-		update_axi_qos(MSM_AXI_QOS_PREVIEW);
+	}
 
 	/* enable color conversion for bayer sensor
 	if stats enabled, need to do color conversion. */

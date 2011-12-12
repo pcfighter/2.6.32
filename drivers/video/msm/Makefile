@@ -37,6 +37,7 @@ obj-y += mdp_dma_s.o
 obj-y += mdp_vsync.o
 obj-y += mdp_cursor.o
 obj-y += mdp_dma_tv.o
+obj-y += mddi_swift.o mddi_swift_panel.o
 
 # EBI2
 obj-$(CONFIG_FB_MSM_EBI2) += ebi2_lcd.o
@@ -68,8 +69,6 @@ obj-y += mddi_toshiba_wvga_pt.o
 obj-y += mddi_toshiba_wvga.o
 obj-y += mddi_sharp.o
 obj-y += mddi_orise.o
-obj-y += mddi_hitachi_hvga.o
-obj-y += mddi_novatek_hvga.o
 else
 obj-$(CONFIG_FB_MSM_MDDI_PRISM_WVGA) += mddi_prism.o
 obj-$(CONFIG_FB_MSM_MDDI_TOSHIBA_COMMON) += mddi_toshiba.o
@@ -78,8 +77,6 @@ obj-$(CONFIG_FB_MSM_MDDI_TOSHIBA_WVGA_PORTRAIT) += mddi_toshiba_wvga_pt.o
 obj-$(CONFIG_FB_MSM_MDDI_TOSHIBA_WVGA) += mddi_toshiba_wvga.o
 obj-$(CONFIG_FB_MSM_MDDI_SHARP_QVGA_128x128) += mddi_sharp.o
 obj-$(CONFIG_FB_MSM_MDDI_ORISE) += mddi_orise.o
-obj-$(CONFIG_FB_MSM_MDDI_HITACHI_HVGA) += mddi_hitachi_hvga.o
-obj-$(CONFIG_FB_MSM_MDDI_NOVATEK_HVGA) += mddi_novatek_hvga.o
 endif
 
 obj-$(CONFIG_FB_MSM_LCDC_PANEL) += lcdc_panel.o

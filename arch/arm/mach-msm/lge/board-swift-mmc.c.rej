@@ -1,0 +1,14 @@
+--- arch/arm/mach-msm/lge/board-swift-mmc.c
++++ arch/arm/mach-msm/lge/board-swift-mmc.c
+@@ -243,9 +245,9 @@
+ static unsigned int thunderg_sdcc_slot_status(struct device *dev)
+ {
+ #if defined(CONFIG_MACH_MSM7X27_THUNDER_REV_1)
+-	return !(gpio_get_value(GPIO_MMC_COVER_DETECT)||gpio_get_value(GPIO_SD_DETECT_N));
++	return !(gpio_get_value(GPIO_SD_DETECT_N)||gpio_get_value(GPIO_MMC_COVER_DETECT));
+ #else
+-	return !gpio_get_value(GPIO_MMC_COVER_DETECT);
++	return !gpio_get_value(GPIO_SD_DETECT_N);
+ #endif
+ }
+ #endif

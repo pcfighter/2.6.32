@@ -84,6 +84,8 @@ enum {
 #define BATTERY_LOW            	2800
 #define BATTERY_HIGH           	4300
 
+#define BATTERY_LOW_CORRECTION            100
+
 #define ONCRPC_CHG_GET_GENERAL_STATUS_PROC 	12
 #define ONCRPC_CHARGER_API_VERSIONS_PROC 	0xffffffff
 
@@ -389,7 +391,7 @@ static int msm_batt_power_get_property(struct power_supply *psy,
 		val->intval = msm_batt_info.batt_capacity;
 		break;
 	case POWER_SUPPLY_PROP_TEMP:
-		val->intval = msm_batt_info.battery_temp;
+		val->intval = msm_batt_info.battery_temp * 10;
 		break;
 #if defined(CONFIG_MACH_MSM7X27_THUNDERC)
 	case POWER_SUPPLY_PROP_BATTERY_ID_CHECK:
@@ -721,9 +723,15 @@ static void msm_batt_update_psy_status(void)
 					POWER_SUPPLY_STATUS_CHARGING;
 			}
 #else
+		if (supp)
+		{
+		    if (supp->type != POWER_SUPPLY_TYPE_BATTERY)
+		    {
 			DBG_LIMIT("BATT: In charging\n");
 			msm_batt_info.batt_status =
 				POWER_SUPPLY_STATUS_CHARGING;
+				}
+			}
 #endif
 		}
 	}

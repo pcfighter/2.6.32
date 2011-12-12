@@ -42,7 +42,6 @@
 #define NUM_AUTOFOCUS_MULTI_WINDOW_GRIDS 16
 #define NUM_STAT_OUTPUT_BUFFERS      3
 #define NUM_AF_STAT_OUTPUT_BUFFERS      3
-#define max_control_command_size 150
 
 enum msm_queue {
 	MSM_CAM_Q_CTRL,     /* control command or control command status */
@@ -102,13 +101,20 @@ struct msm_camvfe_fn {
 	int (*vfe_config)(struct msm_vfe_cfg_cmd *, void *);
 	int (*vfe_disable)(struct camera_enable_cmd *,
 		struct platform_device *dev);
-	void (*vfe_release)(struct platform_device *);
+	void (*vfe_release)(struct msm_sync *);
+//	void (*vfe_release)(struct platform_device *);
 };
 
 struct msm_sensor_ctrl {
 	int (*s_init)(const struct msm_camera_sensor_info *);
-	int (*s_release)(void);
+	int (*s_release)(const struct msm_camera_sensor_info *);
 	int (*s_config)(void __user *);
+	int (*s_reset)(const struct msm_camera_sensor_info *, int);
+	int (*s_pwdn)(const struct msm_camera_sensor_info *, int);
+#if defined(CONFIG_MACH_LGE)	
+	/* for auto-focus */
+	int (*s_sf_cmd)(int);
+#endif /* CONFIG_MACH_LGE */
 };
 
 /* this structure is used in kernel */
@@ -120,8 +126,6 @@ struct msm_queue_cmd {
 	enum msm_queue type;
 	void *command;
 	int on_heap;
-	struct timespec ts;
-	uint32_t error_code;
 };
 
 struct msm_device_queue {
@@ -196,7 +200,7 @@ struct msm_control_device {
 	struct msm_device *pmsm;
 
 	/* Used for MSM_CAM_IOCTL_CTRL_CMD_DONE responses */
-	uint8_t ctrl_data[max_control_command_size];
+	uint8_t ctrl_data[50];
 	struct msm_ctrl_cmd ctrl;
 	struct msm_queue_cmd qcmd;
 
@@ -263,6 +267,11 @@ int msm_camera_drv_start(struct platform_device *dev,
 		int (*sensor_probe)(const struct msm_camera_sensor_info *,
 					struct msm_sensor_ctrl *));
 
+#if defined (CONFIG_LGE_CAMERA_HIDDEN_MENU_TEST_PATCH)
+int msm_camera_mclk_idx_value(void);
+int msm_camera_pclk_idx_value(void);
+#endif
+
 enum msm_camio_clk_type {
 	CAMIO_VFE_MDC_CLK,
 	CAMIO_MDC_CLK,
@@ -273,16 +282,9 @@ enum msm_camio_clk_type {
 	CAMIO_VFE_PBDG_CLK,
 	CAMIO_CAM_MCLK_CLK,
 	CAMIO_CAMIF_PAD_PBDG_CLK,
-
-	CAMIO_CSI0_VFE_CLK,
-	CAMIO_CSI1_VFE_CLK,
-	CAMIO_VFE_PCLK,
-
-	CAMIO_CSI_SRC_CLK,
-	CAMIO_CSI0_CLK,
-	CAMIO_CSI1_CLK,
-	CAMIO_CSI0_PCLK,
-	CAMIO_CSI1_PCLK,
+	CAMIO_CSI_CLK,
+	CAMIO_CSI_VFE_CLK,
+	CAMIO_CSI_PCLK,
 	CAMIO_MAX_CLK
 };
 
@@ -340,17 +342,21 @@ void msm_camio_clk_sel(enum msm_camio_clk_src_type);
 void msm_camio_disable(struct platform_device *);
 int msm_camio_probe_on(struct platform_device *);
 int msm_camio_probe_off(struct platform_device *);
-int msm_camio_sensor_clk_off(struct platform_device *);
-int msm_camio_sensor_clk_on(struct platform_device *);
 int msm_camio_csi_config(struct msm_camera_csi_params *csi_params);
-int add_axi_qos(void);
+int request_axi_qos(uint32_t freq);
 int update_axi_qos(uint32_t freq);
 void release_axi_qos(void);
+int msm_camio_read_camif_status(void);
+
 void msm_io_w(u32 data, void __iomem *addr);
 void msm_io_w_mb(u32 data, void __iomem *addr);
 u32 msm_io_r(void __iomem *addr);
 u32 msm_io_r_mb(void __iomem *addr);
 void msm_io_dump(void __iomem *addr, int size);
 void msm_io_memcpy(void __iomem *dest_addr, void __iomem *src_addr, u32 len);
+
+#if defined (CONFIG_AAT1270_FLASH)
+int aat1270_flash_led_set_current(int on);
+#endif
 
 #endif

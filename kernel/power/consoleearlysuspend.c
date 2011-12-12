@@ -52,7 +52,7 @@ static void console_late_resume(struct early_suspend *h)
 		return;
 	}
 
-	if (vt_waitactive(orig_fgconsole + 1))
+	if (vt_waitactive(orig_fgconsole))
 		pr_warning("console_late_resume: Can't switch VCs.\n");
 }
 

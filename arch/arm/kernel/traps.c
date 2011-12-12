@@ -62,10 +62,7 @@ void dump_backtrace_entry(unsigned long where, unsigned long from, unsigned long
  // LGE_CHANGE_S [bluerti@lge.com]
 	if (lge_error_analyzing == 1){
 	  char * temp;
-	  //sprintf(crash_buf[lge_error_fb_cnt], "[<%08lx>] ");
-	  temp = crash_buf[lge_error_fb_cnt];
-	  temp += 13;
-	  sprint_symbol(temp, where);
+	  sprintf(crash_buf[lge_error_fb_cnt], "[<%08lx>] " ); temp = crash_buf[lge_error_fb_cnt]; temp+=13; sprint_symbol(temp, where);		
 	  lge_error_fb_cnt++;
 	} else {	// Normal case 
 	sprint_symbol(sym1, where);

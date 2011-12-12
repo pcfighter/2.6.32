@@ -40,10 +40,6 @@
 #include <linux/android_pmem.h>
 #include <linux/leds.h>
 
-#ifdef CONFIG_LGE_HIDDEN_RESET_PATCH
-#include <mach/board_lge.h>
-#endif
-
 #define MSM_FB_C
 #include "msm_fb.h"
 #include "mddihosti.h"
@@ -85,7 +81,6 @@ u32 msm_fb_msg_level = 7;
 
 /* Setting mddi_msg_level to 8 prints out ALL messages */
 u32 mddi_msg_level = 5;
-int msm_fb_refesh_enabled = 1;	// LGE_CHANGE [bluerti@lge.com] 2009-07-18
 
 extern int32 mdp_block_power_cnt[MDP_MAX_BLOCK];
 extern unsigned long mdp_timer_duration;
@@ -106,35 +101,6 @@ static int msm_fb_suspend_sub(struct msm_fb_data_type *mfd);
 static int msm_fb_ioctl(struct fb_info *info, unsigned int cmd,
 			unsigned long arg);
 static int msm_fb_mmap(struct fb_info *info, struct vm_area_struct * vma);
-
-#if CONFIG_LGE_GRAM_REFRESH_PATCH
-static struct fb_var_screeninfo *last_var;
-static struct fb_info *last_info;
-static struct early_suspend additional_early_suspend;
-static void msmfb_early_suspend_early(struct early_suspend *h);
-static void msmfb_late_resume_late(struct early_suspend *h);
-#endif
-
-/* LGE_CHANGE_S
- * Change codes to remove console cursor on booting screen. Refered to VS740
- * 2010-07-31. minjong.gong@lge.com
- */
-#ifdef CONFIG_LGE_FBCON_INACTIVE_CONSOLE
-static int is_console_inactive = 0;
-
-static void msm_fb_set_console_inactive(int inactive)
-{
-
-       is_console_inactive = inactive;
-}
-
-int msm_fb_get_console_inactive(void)
-{
-       return is_console_inactive;
-}
-EXPORT_SYMBOL(msm_fb_get_console_inactive);
-#endif
-/* LGE_CHANGE_E, 2010-07-31. minjong.gong@lge.com  */
 
 #ifdef MSM_FB_ENABLE_DBGFS
 
@@ -229,13 +195,6 @@ int msm_fb_detect_client(const char *name)
 
 	return ret;
 }
-
-#ifdef CONFIG_LGE_HIDDEN_RESET_PATCH
-void *lge_get_fb_addr(void)
-{
-	return (fbram - (320 * 480 * 2 * 2));
-}
-#endif
 
 static int msm_fb_probe(struct platform_device *pdev)
 {
@@ -520,19 +479,6 @@ static void msmfb_early_resume(struct early_suspend *h)
 						    early_suspend);
 	msm_fb_resume_sub(mfd);
 }
-
-#if CONFIG_LGE_GRAM_REFRESH_PATCH
-static void msmfb_early_suspend_early(struct early_suspend *h)
-{
-	/* do nothing */
-}
-
-static void msmfb_late_resume_late(struct early_suspend *h)
-{
-	memset((void *)last_info->screen_base, 0, last_info->fix.smem_len);
-	msm_fb_pan_display(last_var, last_info);
-}
-#endif
 #endif
 
 void msm_fb_set_backlight(struct msm_fb_data_type *mfd, __u32 bkl_lvl, u32 save)
@@ -576,7 +522,7 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 	switch (blank_mode) {
 	case FB_BLANK_UNBLANK:
 		if (!mfd->panel_power_on) {
-			msleep(16);
+			mdelay(100);
 			ret = pdata->on(mfd->pdev);
 			if (ret == 0) {
 				mfd->panel_power_on = TRUE;
@@ -610,7 +556,7 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 			curr_pwr_state = mfd->panel_power_on;
 			mfd->panel_power_on = FALSE;
 
-			msleep(16);
+			mdelay(100);
 			ret = pdata->off(mfd->pdev);
 			if (ret)
 				mfd->panel_power_on = curr_pwr_state;
@@ -992,15 +938,6 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	mfd->op_enable = TRUE;
 	mfd->panel_power_on = FALSE;
 
-/* LGE_CHANGE_S
- * Change codes to remove console cursor on booting screen. Refered to VS740
- * 2010-07-31. minjong.gong@lge.com
- */
-#ifdef CONFIG_LGE_FBCON_INACTIVE_CONSOLE
-	msm_fb_set_console_inactive(1);
-#endif
-/* LGE_CHANGE_E, 2010-07-31. minjong.gong@lge.com */
-
 	/* cursor memory allocation */
 	if (mfd->cursor_update) {
 		mfd->cursor_buf = dma_alloc_coherent(NULL,
@@ -1050,13 +987,6 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	mfd->early_suspend.resume = msmfb_early_resume;
 	mfd->early_suspend.level = EARLY_SUSPEND_LEVEL_DISABLE_FB - 2;
 	register_early_suspend(&mfd->early_suspend);
-
-#if CONFIG_LGE_GRAM_REFRESH_PATCH
-	additional_early_suspend.suspend = msmfb_early_suspend_early;
-	additional_early_suspend.resume = msmfb_late_resume_late;
-	additional_early_suspend.level = EARLY_SUSPEND_LEVEL_DISABLE_FB - 10;
-	register_early_suspend(&additional_early_suspend);
-#endif
 #endif
 
 #ifdef MSM_FB_ENABLE_DBGFS
@@ -1202,16 +1132,6 @@ static int msm_fb_open(struct fb_info *info, int user)
 		}
 	}
 
-/* LGE_CHANGE_S
- * Change codes to remove console cursor on booting screen. Refered to VS740
- * 2010-07-31. minjong.gong@lge.com
- */
-#ifdef CONFIG_LGE_FBCON_INACTIVE_CONSOLE
-		if(mfd->ref_cnt > 1 && msm_fb_get_console_inactive())
-				msm_fb_set_console_inactive(0);
-#endif
-/* LGE_CHANGE_E, 2010-07-31. minjong.gong@lge.com */
-
 	mfd->ref_cnt++;
 	return 0;
 }
@@ -1249,9 +1169,6 @@ static int msm_fb_pan_display(struct fb_var_screeninfo *var,
 	struct mdp_dirty_region dirty;
 	struct mdp_dirty_region *dirtyPtr = NULL;
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
-
-	last_var = var;
-	last_info = info;
 
 	if ((!mfd->op_enable) || (!mfd->panel_power_on))
 		return -EPERM;
@@ -1637,196 +1554,6 @@ static int mdp_blit_split_height(struct fb_info *info,
 }
 #endif
 
-/* following is qct's comment
- * this is temporal patch
- * this patch will be included in qualcomm's next release.
- * next release may be CS in Aug.
- * so, we patch this code for pre-release test
- * 2010-07-29, cleaneye.kim@lge.com
- */
-// gciambel: 	cleaned this up to be MDP3.02 clean
-//		The tile processing is different and thus we a different check.
-//		Also, 7x27 does NOT have MN scaling and overhang issues in the height so no height splits are required
-//              I removed all of these from the code and ONLY split in the width
-//
-#ifdef CONFIG_MACH_LGE
-int mdp_blit(struct fb_info *info, struct mdp_blit_req *req) {
-	int ret;
-#if defined CONFIG_FB_MSM_MDP31 || defined CONFIG_FB_MSM_MDP30
-	unsigned int remainder = 0, is_bpp_4 = 0;
-	struct mdp_blit_req splitreq;
-	int s_x_0, s_x_1, s_w_0, s_w_1, s_y_0, s_y_1, s_h_0, s_h_1;
-	int d_x_0, d_x_1, d_w_0, d_w_1, d_y_0, d_y_1, d_h_0, d_h_1;
-
-	if (req->flags & MDP_ROT_90) {
-		if (((req->dst_rect.h == 1) && ((req->src_rect.w != 1) ||
-				(req->dst_rect.w != req->src_rect.h))) ||
-				((req->dst_rect.w == 1) && ((req->src_rect.h != 1) ||
-					(req->dst_rect.h != req->src_rect.w)))) {
-			printk(KERN_ERR "mpd_ppp: error scaling when size is 1!\n");
-			return -EINVAL;
-		}
-	} else {
-		if (((req->dst_rect.w == 1) && ((req->src_rect.w != 1) ||
-						(req->dst_rect.h != req->src_rect.h))) ||
-				((req->dst_rect.h == 1) && ((req->src_rect.h != 1) ||
-					(req->dst_rect.w != req->src_rect.w)))) {
-			printk(KERN_ERR "mpd_ppp: error scaling when size is 1!\n");
-			return -EINVAL;
-		}
-	}
-#endif
-	if (unlikely(req->src_rect.h == 0 || req->src_rect.w == 0)) {
-		printk(KERN_ERR "mpd_ppp: src img of zero size!\n");
-		return -EINVAL;
-	}
-	if (unlikely(req->dst_rect.h == 0 || req->dst_rect.w == 0))
-		return 0;
-
-#if defined CONFIG_FB_MSM_MDP31 || defined CONFIG_FB_MSM_MDP30
-	/* MDP width split workaround */
-	remainder = (req->dst_rect.w)%16;
-	is_bpp_4 = (mdp_get_bytes_per_pixel(req->dst.format) == 4) ? 1 : 0;
-
-	if ((is_bpp_4 && (remainder == 6 || remainder == 14)) ) {
-
-		/* make new request as provide by user */
-		splitreq = *req;
-
-		/* break dest roi at width*/
-		d_y_0 = d_y_1 = req->dst_rect.y;
-		d_h_0 = d_h_1 = req->dst_rect.h;
-		d_x_0 = req->dst_rect.x;
-
-		if (remainder == 14)
-			d_w_1 = (req->dst_rect.w - 14) / 2 + 4;
-		else if (remainder == 6)
-			d_w_1 = req->dst_rect.w / 2 - 1;
-		else
-			d_w_1 = (req->dst_rect.w - 1) / 2 - 1;
-
-		d_w_0 = req->dst_rect.w - d_w_1;
-		d_x_1 = d_x_0 + d_w_0;
-
-		/* blit first region */
-		if (((splitreq.flags & 0x07) == 0x07) ||
-				((splitreq.flags & 0x07) == 0x0)) {
-
-			if (splitreq.flags & MDP_ROT_90) {
-				s_x_0 = s_x_1 = req->src_rect.x;
-				s_w_0 = s_w_1 = req->src_rect.w;
-				s_y_0 = req->src_rect.y;
-				s_h_1 = (req->src_rect.h * d_w_1) /
-					req->dst_rect.w;
-				s_h_0 = req->src_rect.h - s_h_1;
-				s_y_1 = s_y_0 + s_h_0;
-				if (d_w_1 >= 8 * s_h_1) {
-					s_h_1++;
-					s_y_1--;
-				}
-			} else {
-				s_y_0 = s_y_1 = req->src_rect.y;
-				s_h_0 = s_h_1 = req->src_rect.h;
-				s_x_0 = req->src_rect.x;
-				s_w_1 = (req->src_rect.w * d_w_1) /
-					req->dst_rect.w;
-				s_w_0 = req->src_rect.w - s_w_1;
-				s_x_1 = s_x_0 + s_w_0;
-				if (d_w_1 >= 8 * s_w_1) {
-					s_w_1++;
-					s_x_1--;
-				}
-			}
-
-			splitreq.src_rect.h = s_h_0;
-			splitreq.src_rect.y = s_y_0;
-			splitreq.dst_rect.h = d_h_0;
-			splitreq.dst_rect.y = d_y_0;
-			splitreq.src_rect.x = s_x_0;
-			splitreq.src_rect.w = s_w_0;
-			splitreq.dst_rect.x = d_x_0;
-			splitreq.dst_rect.w = d_w_0;
-		} else {
-			if (splitreq.flags & MDP_ROT_90) {
-				s_x_0 = s_x_1 = req->src_rect.x;
-				s_w_0 = s_w_1 = req->src_rect.w;
-				s_y_0 = req->src_rect.y;
-				s_h_1 = (req->src_rect.h * d_w_0) /
-					req->dst_rect.w;
-				s_h_0 = req->src_rect.h - s_h_1;
-				s_y_1 = s_y_0 + s_h_0;
-				if (d_w_0 >= 8 * s_h_1) {
-					s_h_1++;
-					s_y_1--;
-				}
-			} else {
-				s_y_0 = s_y_1 = req->src_rect.y;
-				s_h_0 = s_h_1 = req->src_rect.h;
-				s_x_0 = req->src_rect.x;
-				s_w_1 = (req->src_rect.w * d_w_0) /
-					req->dst_rect.w;
-				s_w_0 = req->src_rect.w - s_w_1;
-				s_x_1 = s_x_0 + s_w_0;
-				if (d_w_0 >= 8 * s_w_1) {
-					s_w_1++;
-					s_x_1--;
-				}
-			}
-			splitreq.src_rect.h = s_h_0;
-			splitreq.src_rect.y = s_y_0;
-			splitreq.dst_rect.h = d_h_1;
-			splitreq.dst_rect.y = d_y_1;
-			splitreq.src_rect.x = s_x_0;
-			splitreq.src_rect.w = s_w_0;
-			splitreq.dst_rect.x = d_x_1;
-			splitreq.dst_rect.w = d_w_1;
-		}
-
-		// No need to split in height
-		ret = mdp_ppp_blit(info, &splitreq);
-
-		if (ret)
-			return ret;
-
-		/* blit second region */
-		if (((splitreq.flags & 0x07) == 0x07) ||
-				((splitreq.flags & 0x07) == 0x0)) {
-			splitreq.src_rect.h = s_h_1;
-			splitreq.src_rect.y = s_y_1;
-			splitreq.dst_rect.h = d_h_1;
-			splitreq.dst_rect.y = d_y_1;
-			splitreq.src_rect.x = s_x_1;
-			splitreq.src_rect.w = s_w_1;
-			splitreq.dst_rect.x = d_x_1;
-			splitreq.dst_rect.w = d_w_1;
-		} else {
-			splitreq.src_rect.h = s_h_1;
-			splitreq.src_rect.y = s_y_1;
-			splitreq.dst_rect.h = d_h_0;
-			splitreq.dst_rect.y = d_y_0;
-			splitreq.src_rect.x = s_x_1;
-			splitreq.src_rect.w = s_w_1;
-			splitreq.dst_rect.x = d_x_0;
-			splitreq.dst_rect.w = d_w_0;
-		}
-
-		// No need to split in height ... just width
-		ret = mdp_ppp_blit(info, &splitreq);
-
-		if (ret)
-			return ret;
-
-	} 
-	else
-		ret = mdp_ppp_blit(info, req);
-	return ret;
-#else
-	ret = mdp_ppp_blit(info, req);
-	return ret;
-#endif
-}
-
-#else
 int mdp_blit(struct fb_info *info, struct mdp_blit_req *req)
 {
 	int ret;
@@ -2169,7 +1896,6 @@ int mdp_blit(struct fb_info *info, struct mdp_blit_req *req)
 	return ret;
 #endif
 }
-#endif
 
 typedef void (*msm_dma_barrier_function_pointer) (void *, size_t);
 

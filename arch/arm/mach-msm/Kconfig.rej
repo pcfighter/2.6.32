@@ -1,0 +1,23 @@
+--- arch/arm/mach-msm/Kconfig
++++ arch/arm/mach-msm/Kconfig
+@@ -444,18 +444,14 @@
+ 
+ endif # MSM_CPU_FREQ_SCREEN
+ 
+-if MSM_CPU_FREQ_ONDEMAND || MSM_CPU_FREQ_USERSPACE || MSM_CPU_FREQ_MSM7K
+-
+ config MSM_CPU_FREQ_SCALING_MAX
+-	int "Max"
++	int "CPU Scaling Max"
+ 	default 384000
+ 
+ config MSM_CPU_FREQ_SCALING_MIN
+-	int "Min"
++	int "CPU Scaling Min"
+ 	default 245760
+ 
+-endif # MSM_CPU_FREQ
+-
+ config MSM_HW3D
+ 	tristate "MSM Hardware 3D Register Driver"
+ 	default y

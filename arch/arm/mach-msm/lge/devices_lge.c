@@ -153,7 +153,7 @@ static int msm_fb_detect_panel(const char *name)
 	int ret = -EPERM;
 
 	if (machine_is_msm7x25_ffa() || machine_is_msm7x27_ffa()) {
-		if (!strcmp(name, "lcdc_lgit_wvga"))
+		if (!strcmp(name, "lcdc_sharp_wvga"))
 			ret = 0;
 		else
 			ret = -ENODEV;
@@ -890,6 +890,14 @@ int init_gpio_i2c_pin(struct i2c_gpio_platform_data *i2c_adap_pdata,
 }
 
 __WEAK void __init lge_add_camera_devices(void)
+{
+}
+
+__WEAK void __init swift_init_accel(void)
+{
+}
+
+__WEAK void __init swift_init_i2c_compass(void)
 {
 }
 
